@@ -8,12 +8,20 @@ export default class TableController {
     private _table: Table = null;
 
     constructor(appContainer: HTMLDivElement) {
+        // set container and create table div
         this._appContainer = appContainer;
-
         this._constructTable();
 
+        // populate table parts
         this._tableModel = new TableModel();
         this._table = new Table(this._tableModel, this._tableContainer);
+
+        //TESTING drawing
+        const newImage:HTMLImageElement = new Image();
+        newImage.src = 'src/assets/images/nightstone.jpeg';
+        newImage.onload = () => {
+            this._table.drawAPicture(newImage,0,0,newImage.width,newImage.height);
+        }
     }
 
     private _constructTable(): void {

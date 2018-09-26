@@ -1,9 +1,15 @@
 export default class CanvasUtil {
-    private container: HTMLDivElement = null;
+    private _canvasRef: HTMLCanvasElement = null;
+    private _context: CanvasRenderingContext2D = null;
 
-    public static mountOnID(id: string): CanvasUtil {
+    public static mountOnCanvasElement(canvasRef: HTMLCanvasElement): CanvasUtil {
         const instance = new CanvasUtil();
-        instance.container = document.querySelector(id);
+        instance._canvasRef = canvasRef;
+        instance._context = canvasRef.getContext('2d');
         return instance;
+    }
+
+    public drawImage(img: HTMLImageElement, x: number, y: number, width: number, height: number): void {
+        this._context.drawImage(img,x,y,width,height);
     }
 }

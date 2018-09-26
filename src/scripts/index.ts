@@ -21,4 +21,7 @@ class App {
     }
 }
 
+
+console.clear();
+
 new App();

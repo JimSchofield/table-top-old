@@ -5,7 +5,7 @@ export default class Table {
     private _tableContainer: HTMLDivElement = null;
     private _tableModel: TableModel = null;
     private _canvasRef: HTMLCanvasElement = null;
-    private canvas:CanvasUtil = null;
+    private _canvas:CanvasUtil = null;
 
     constructor(tableModel: TableModel, tableContainer: HTMLDivElement) {
         this._tableModel = tableModel;
@@ -18,5 +18,17 @@ export default class Table {
         this._canvasRef = document.createElement('canvas');
         this._canvasRef.id = 'table-canvas';
         this._tableContainer.appendChild(this._canvasRef);
+        this._resizeCanvasToParent();
+        this._canvas = CanvasUtil.mountOnCanvasElement(this._canvasRef);
+    }
+
+    private _resizeCanvasToParent() {
+        // in CSS, canvas is already 100% width/height.  Need to resize canvas
+        this._canvasRef.width = this._canvasRef.offsetWidth;
+        this._canvasRef.height = this._canvasRef.offsetHeight;
+    }
+
+    public drawAPicture(img: HTMLImageElement,x:number, y:number, width: number, height: number): void {
+        this._canvas.drawImage(img,x,y,width,height);
     }
 }

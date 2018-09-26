@@ -1,5 +1,6 @@
 import TableModel from "./TableModel";
 import CanvasUtil from '../Util/CanvasUtil';
+import Point from "../Util/Point";
 
 export default class Table {
     private _tableContainer: HTMLDivElement = null;
@@ -28,7 +29,12 @@ export default class Table {
         this._canvasRef.height = this._canvasRef.offsetHeight;
     }
 
-    public drawAPicture(img: HTMLImageElement,x:number, y:number, width: number, height: number): void {
-        this._canvas.drawImage(img,x,y,width,height);
+    public render(): void {
+        //draw background
+        if (this._tableModel.bgImage) {
+            const img:HTMLImageElement = this._tableModel.bgImage;
+            const offset:Point = this._tableModel.offset;
+            this._canvas.drawImage(img, offset.x, offset.y, img.width, img.height);
+        }
     }
 }

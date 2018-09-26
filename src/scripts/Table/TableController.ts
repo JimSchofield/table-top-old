@@ -1,5 +1,6 @@
 import TableModel from "./TableModel";
 import Table from "./Table";
+import render from '../Render/render';
 
 export default class TableController {
     private _appContainer:HTMLDivElement = null;
@@ -16,12 +17,11 @@ export default class TableController {
         this._tableModel = new TableModel();
         this._table = new Table(this._tableModel, this._tableContainer);
 
-        //TESTING drawing
-        const newImage:HTMLImageElement = new Image();
-        newImage.src = 'src/assets/images/nightstone.jpeg';
-        newImage.onload = () => {
-            this._table.drawAPicture(newImage,0,0,newImage.width,newImage.height);
-        }
+        // TO BE CHANGED INTO REGISTERING RENDER
+        this.setBackground('src/assets/images/nightstone.jpeg');
+
+        // Add table to render queue
+        render.add(this._table);
     }
 
     private _constructTable(): void {
@@ -31,5 +31,13 @@ export default class TableController {
         this._tableContainer.style.width = `${window.innerWidth}px`;
         this._tableContainer.style.height = `${window.innerHeight}px`;
         this._appContainer.appendChild(this._tableContainer);
+    }
+
+    public setBackground(url: string): void {
+        let image: HTMLImageElement = new Image();
+        image.src = url;
+        image.onload = () => {
+            this._tableModel.bgImage = image;
+        }
     }
 }

@@ -19,22 +19,30 @@ export default class Table {
         this._canvasRef = document.createElement('canvas');
         this._canvasRef.id = 'table-canvas';
         this._tableContainer.appendChild(this._canvasRef);
-        this._resizeCanvasToParent();
+        this.resizeCanvasToParent();
         this._canvas = CanvasUtil.mountOnCanvasElement(this._canvasRef);
     }
 
-    private _resizeCanvasToParent() {
+    public resizeCanvasToParent() {
         // in CSS, canvas is already 100% width/height.  Need to resize canvas
         this._canvasRef.width = this._canvasRef.offsetWidth;
         this._canvasRef.height = this._canvasRef.offsetHeight;
     }
 
+    public zoom(value: number): void {
+        this._tableModel.zoom *= value;
+    }
+
     public render(): void {
+        // Clear!
+        this._canvas.clear(0,0,this._canvasRef.width,this._canvasRef.height);
+
         //draw background
         if (this._tableModel.bgImage) {
             const img:HTMLImageElement = this._tableModel.bgImage;
             const offset:Point = this._tableModel.offset;
-            this._canvas.drawImage(img, offset.x, offset.y, img.width, img.height);
+            const bgImageDimensions: Point = this._tableModel.bgScaledImageDimensions;
+            this._canvas.drawImage(img, offset.x, offset.y, bgImageDimensions.x, bgImageDimensions.y);
         }
     }
 }

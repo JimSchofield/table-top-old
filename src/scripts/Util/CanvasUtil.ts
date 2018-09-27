@@ -9,6 +9,10 @@ export default class CanvasUtil {
         return instance;
     }
 
+    public clear(x: number, y: number, width: number, height: number): void {
+        this._context.clearRect(x,y,width,height);
+    }
+
     public drawImage(img: HTMLImageElement, x: number, y: number, width: number, height: number): void {
         this._context.drawImage(img,x,y,width,height);
     }

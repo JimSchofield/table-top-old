@@ -19,6 +19,10 @@ class App {
     private createAppContainer(): this {
         this._container = document.createElement("div");
         this._container.id = "App";
+        this._container.style.cssText = `
+            width: 100%;
+            height: 100vh;        
+        `
         document.body.appendChild(this._container);
 
         return this;

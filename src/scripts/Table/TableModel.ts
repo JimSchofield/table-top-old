@@ -1,13 +1,18 @@
 import Point from '../Util/Point'
 
 export default class TableModel {
+    // settings
     private _offset: Point = Point.fromArray([0,0]);
-    private _bgImage: HTMLImageElement = null;
     private _zoomLevel: number = 1;
+
+    // bg Image
+    private _bgImage: HTMLImageElement = null;
     private _bgImageDimensions: Point = null;
 
+    // tokens
+
     public set offset(val: Point) {
-        this.offset = val;
+        this._offset = val;
     }
 
     public get offset(): Point {
@@ -31,8 +36,18 @@ export default class TableModel {
         return this._zoomLevel;
     }
 
-    public get bgScaledImageDimensions(): Point {
-        return this._bgImageDimensions.scale(this._zoomLevel);
+    public get bgImageDimensions(): Point {
+        return this._bgImageDimensions;
     }
+    // public get bgScaledImageDimensions(): Point {
+    //     return this._bgImageDimensions;
+    // }
 
+    // public toJson(): any {
+    //     return {
+    //         offset: this._offset.toJson(),
+    //         zoomLevel: this._zoomLevel,
+    //         bgDimensions: this._bgImageDimensions,
+    //     };
+    // }
 }

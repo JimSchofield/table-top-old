@@ -1,6 +1,8 @@
+import Point from '../Util/Point';
+import render from "../Render/render";
 import TableModel from "./TableModel";
 import Table from "./Table";
-import render from "../Render/render";
+
 
 export default class TableController {
     private _appContainer: HTMLDivElement = null;
@@ -8,8 +10,9 @@ export default class TableController {
     private _tableModel: TableModel = null;
     private _table: Table = null;
 
-    private _onkeyPressHandler: (event: KeyboardEvent) => void = this._onKeyPress.bind(this);
+    private _onkeyDownHandler: (event: KeyboardEvent) => void = this._onKeyDown.bind(this);
     private _onResizeHandler: (event: Event) => void = this._onResize.bind(this);
+    private _onWheelHandler: (event: WheelEvent) => void = this._onWheel.bind(this);
 
     constructor(appContainer: HTMLDivElement) {
         // set container and create table div
@@ -43,30 +46,55 @@ export default class TableController {
         image.src = url;
         image.onload = () => {
             this._tableModel.bgImage = image;
+            
+            // center table by default
+            this._table.centerTable();
         };
     }
 
     private _attachHandlers(): void {
-        window.addEventListener('keypress', this._onkeyPressHandler);
+        window.addEventListener('keydown', this._onkeyDownHandler);
         window.addEventListener('resize', this._onResizeHandler);
+        window.addEventListener('wheel', this._onWheelHandler);
     }
 
-    private _onKeyPress(event: KeyboardEvent): void {
+    private _onKeyDown(event: KeyboardEvent): void {
         switch (event.key) {
+            case "c":
+                this._table.centerTable();
+                break;
             case "=":
-                console.log("zooming in!");
                 this._table.zoom(1.25);
-                console.log(this._tableModel);
-
                 break;
             case "-":
-                console.log("zooming out!");
                 this._table.zoom(0.8);
-                console.log(this._tableModel);
-
+                break;
+            case "Up":
+            case "ArrowUp":
+                this._table.panBy(new Point(0,50));
+                break;
+            case "Down":
+            case "ArrowDown":
+                this._table.panBy(new Point(0,-50));
+                break;
+            case "Left":
+            case "ArrowLeft":
+                this._table.panBy(new Point(50,0));
+                break;
+            case "Right":
+            case "ArrowRight":
+                this._table.panBy(new Point(-50,0));
                 break;
             default:
                 break;
+        }
+    }
+
+    private _onWheel(event: WheelEvent): void {
+        if (event.wheelDeltaY > 10) {
+            this._table.zoom(.95);
+        } else if (event.wheelDeltaY < -10) {
+            this._table.zoom(1 / .95);
         }
     }
 

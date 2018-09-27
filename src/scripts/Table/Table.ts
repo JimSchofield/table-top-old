@@ -52,6 +52,10 @@ export default class Table {
         this._tableModel.offset = Point.subtract(this._canvasCenter,this._tableModel.bgImageDimensions.clone().scale(.5));
     }
 
+    public resetZoom(): void {
+        this.zoom(1 / this._tableModel.zoom);
+    }
+
     public render(): void {
         // Clear!
         this._canvas.clear(0,0,this._canvasRef.width,this._canvasRef.height);

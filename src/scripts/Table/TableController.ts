@@ -69,6 +69,9 @@ export default class TableController {
             case "-":
                 this._table.zoom(0.8);
                 break;
+            case "0":
+                this._table.resetZoom();
+                break;
             case "Up":
             case "ArrowUp":
                 this._table.panBy(new Point(0,50));
@@ -88,6 +91,8 @@ export default class TableController {
             default:
                 break;
         }
+
+        console.log(this._tableModel);
     }
 
     private _onWheel(event: WheelEvent): void {

@@ -9,12 +9,16 @@ export default class TableController {
     private _tableModel: TableModel = null;
     private _table: Table = null;
     private _lastMousePos: Point = null;
+    private _currentMouse: Point = null;
+    private _isDragging: boolean = false;
 
     private _onkeyDownHandler: ( event: KeyboardEvent ) => void = this._onKeyDown.bind(this);
+    private _onkeyUpHandler: ( event: KeyboardEvent ) => void = this._onKeyUp.bind(this);
     private _onResizeHandler: (event: Event) => void = this._onResize.bind( this );
     private _onWheelHandler: (event: WheelEvent) => void = this._onWheel.bind( this );
-    private _onWheelDownStartPanningHandler : (event: MouseEvent) => void = this._onWheelDownStartPanning.bind(this);
-    private _onMouseMovePanHandler: (event: MouseEvent) => void = this._onMouseMovePan.bind(this);
+    private _onWheelDownStartPanningHandler: ( event: MouseEvent ) => void = this._onWheelDownStartPanning.bind(this);
+    private _onMouseMovePanHandler: ( event: MouseEvent ) => void = this._onMouseMovePan.bind(this);
+    private _onSpaceBarDownClickHandler: (event: MouseEvent) => void = this._onSpaceBarDownClick.bind(this);
 
     constructor(appContainer: HTMLDivElement) {
         // set container and create table div
@@ -56,9 +60,10 @@ export default class TableController {
 
     private _attachHandlers(): void {
         window.addEventListener("keydown", this._onkeyDownHandler);
+        window.addEventListener("keyup", this._onkeyUpHandler);
         window.addEventListener("resize", this._onResizeHandler);
         window.addEventListener("wheel", this._onWheelHandler);
-        this._table.canvasRef.addEventListener('mousedown', this._onWheelDownStartPanningHandler);
+        this._table.canvasRef.addEventListener( "mousedown", this._onWheelDownStartPanningHandler );
     }
 
     private _onKeyDown(event: KeyboardEvent): void {
@@ -91,6 +96,22 @@ export default class TableController {
             case "ArrowRight":
                 this._table.panBy(new Point(-50, 0));
                 break;
+            case " ":
+                if (this._isDragging) {
+                    return;
+                }
+                this._onSpaceBarDownStartPanning();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private _onKeyUp(event: KeyboardEvent): void {
+        switch(event.key) {
+            case ' ':
+                this._onSpaceBarUpStopPanning();
+                break;
             default:
                 break;
         }
@@ -98,35 +119,55 @@ export default class TableController {
 
     private _onWheel(event: WheelEvent): void {
         if (event.wheelDeltaY > 10) {
-            this._table.zoom(0.95);
+            this._table.zoom(0.9);
         } else if (event.wheelDeltaY < -10) {
-            this._table.zoom(1 / 0.95);
+            this._table.zoom(1 / 0.9);
         }
     }
 
     private _onWheelDownStartPanning(event: MouseEvent): void {
-        if (event.button === 1) {            
+        if (event.button === 1) {
             document.body.style.cursor = "move";
             this._lastMousePos = Point.fromMouseEvent(event);
-            window.addEventListener('mousemove', this._onMouseMovePanHandler);
+            window.addEventListener("mousemove", this._onMouseMovePanHandler);
         }
     }
 
-    private _onMouseMovePan(event:MouseEvent): void {
+    private _onMouseMovePan(event: MouseEvent): void {
+        console.log('onMouseMovePan');
         if (event.buttons == 0) {
             /*
             * Occasionally this event is not triggered and the pan listener is not
             * removed.  This results in a jump to the mouse click on the next pan
             * attempt.  Seems to be browser bug
             */
-            window.removeEventListener('mousemove', this._onMouseMovePanHandler);
-            document.body.style.cursor = "default"
+            window.removeEventListener( "mousemove", this._onMouseMovePanHandler );
+            console.log('exit panning');
+            document.body.style.cursor = "default";
         } else {
+            document.body.style.cursor = "move";          
             const client = Point.fromMouseEvent(event);
-            const delta = Point.subtract(client,this._lastMousePos);
+            const delta = Point.subtract(client, this._lastMousePos);
             this._tableModel.offset.add(delta);
             this._lastMousePos = client;
         }
+    }
+
+    private _onSpaceBarDownStartPanning(): void {
+        // Attached a listener to wait for click, and then attach move pan handler
+        this._isDragging = true;
+        document.body.style.cursor = "move";
+        window.addEventListener("mousedown", this._onSpaceBarDownClickHandler);
+    }
+
+    private _onSpaceBarDownClick(event: MouseEvent): void {
+        this._lastMousePos = Point.fromMouseEvent(event);
+        window.addEventListener("mousemove", this._onMouseMovePanHandler);
+    }
+
+    private _onSpaceBarUpStopPanning(): void {
+        this._isDragging = false;
+        window.removeEventListener('mousedown', this._onSpaceBarDownClickHandler);
     }
 
     private _onResize(): void {

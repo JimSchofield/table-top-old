@@ -1,18 +1,20 @@
-import Point from '../Util/Point';
+import Point from "../Util/Point";
 import render from "../Render/render";
 import TableModel from "./TableModel";
 import Table from "./Table";
-
 
 export default class TableController {
     private _appContainer: HTMLDivElement = null;
     private _tableContainer: HTMLDivElement = null;
     private _tableModel: TableModel = null;
     private _table: Table = null;
+    private _lastMousePos: Point = null;
 
-    private _onkeyDownHandler: (event: KeyboardEvent) => void = this._onKeyDown.bind(this);
-    private _onResizeHandler: (event: Event) => void = this._onResize.bind(this);
-    private _onWheelHandler: (event: WheelEvent) => void = this._onWheel.bind(this);
+    private _onkeyDownHandler: ( event: KeyboardEvent ) => void = this._onKeyDown.bind(this);
+    private _onResizeHandler: (event: Event) => void = this._onResize.bind( this );
+    private _onWheelHandler: (event: WheelEvent) => void = this._onWheel.bind( this );
+    private _onWheelDownStartPanningHandler : (event: MouseEvent) => void = this._onWheelDownStartPanning.bind(this);
+    private _onMouseMovePanHandler: (event: MouseEvent) => void = this._onMouseMovePan.bind(this);
 
     constructor(appContainer: HTMLDivElement) {
         // set container and create table div
@@ -46,16 +48,17 @@ export default class TableController {
         image.src = url;
         image.onload = () => {
             this._tableModel.bgImage = image;
-            
+
             // center table by default
             this._table.centerTable();
         };
     }
 
     private _attachHandlers(): void {
-        window.addEventListener('keydown', this._onkeyDownHandler);
-        window.addEventListener('resize', this._onResizeHandler);
-        window.addEventListener('wheel', this._onWheelHandler);
+        window.addEventListener("keydown", this._onkeyDownHandler);
+        window.addEventListener("resize", this._onResizeHandler);
+        window.addEventListener("wheel", this._onWheelHandler);
+        this._table.canvasRef.addEventListener('mousedown', this._onWheelDownStartPanningHandler);
     }
 
     private _onKeyDown(event: KeyboardEvent): void {
@@ -74,32 +77,55 @@ export default class TableController {
                 break;
             case "Up":
             case "ArrowUp":
-                this._table.panBy(new Point(0,50));
+                this._table.panBy(new Point(0, 50));
                 break;
             case "Down":
             case "ArrowDown":
-                this._table.panBy(new Point(0,-50));
+                this._table.panBy(new Point(0, -50));
                 break;
             case "Left":
             case "ArrowLeft":
-                this._table.panBy(new Point(50,0));
+                this._table.panBy(new Point(50, 0));
                 break;
             case "Right":
             case "ArrowRight":
-                this._table.panBy(new Point(-50,0));
+                this._table.panBy(new Point(-50, 0));
                 break;
             default:
                 break;
         }
-
-        console.log(this._tableModel);
     }
 
     private _onWheel(event: WheelEvent): void {
         if (event.wheelDeltaY > 10) {
-            this._table.zoom(.95);
+            this._table.zoom(0.95);
         } else if (event.wheelDeltaY < -10) {
-            this._table.zoom(1 / .95);
+            this._table.zoom(1 / 0.95);
+        }
+    }
+
+    private _onWheelDownStartPanning(event: MouseEvent): void {
+        if (event.button === 1) {            
+            document.body.style.cursor = "move";
+            this._lastMousePos = Point.fromMouseEvent(event);
+            window.addEventListener('mousemove', this._onMouseMovePanHandler);
+        }
+    }
+
+    private _onMouseMovePan(event:MouseEvent): void {
+        if (event.buttons == 0) {
+            /*
+            * Occasionally this event is not triggered and the pan listener is not
+            * removed.  This results in a jump to the mouse click on the next pan
+            * attempt.  Seems to be browser bug
+            */
+            window.removeEventListener('mousemove', this._onMouseMovePanHandler);
+            document.body.style.cursor = "default"
+        } else {
+            const client = Point.fromMouseEvent(event);
+            const delta = Point.subtract(client,this._lastMousePos);
+            this._tableModel.offset.add(delta);
+            this._lastMousePos = client;
         }
     }
 

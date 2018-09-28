@@ -8,8 +8,11 @@ export default class Point {
     }
 
     public static fromArray(arr: [number,number]): Point {
-        const instance = new Point(arr[0], arr[1]);
-        return instance;
+        return new Point(arr[0], arr[1]);
+    }
+
+    public static fromMouseEvent(event: MouseEvent): Point {
+        return new Point(event.clientX, event.clientY);
     }
 
     public get x(): number {

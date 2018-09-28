@@ -5,7 +5,7 @@ import Point from "../Util/Point";
 export default class Table {
     private _tableContainer: HTMLDivElement = null;
     private _tableModel: TableModel = null;
-    private _canvasRef: HTMLCanvasElement = null;
+    public canvasRef: HTMLCanvasElement = null;
     private _canvas:CanvasUtil = null;
     private _canvasCenter: Point = null;
 
@@ -17,18 +17,18 @@ export default class Table {
     }
 
     private _constructCanvas():void {
-        this._canvasRef = document.createElement('canvas');
-        this._canvasRef.id = 'table-canvas';
-        this._tableContainer.appendChild(this._canvasRef);
+        this.canvasRef = document.createElement('canvas');
+        this.canvasRef.id = 'table-canvas';
+        this._tableContainer.appendChild(this.canvasRef);
         this.resizeCanvasToParent();
-        this._canvas = CanvasUtil.mountOnCanvasElement(this._canvasRef);
+        this._canvas = CanvasUtil.mountOnCanvasElement(this.canvasRef);
     }
 
     public resizeCanvasToParent() {
         // in CSS, canvas is already 100% width/height.  Need to resize canvas
-        this._canvasRef.width = this._canvasRef.offsetWidth;
-        this._canvasRef.height = this._canvasRef.offsetHeight;
-        this._canvasCenter = new Point(this._canvasRef.width / 2,this._canvasRef.height / 2)
+        this.canvasRef.width = this.canvasRef.offsetWidth;
+        this.canvasRef.height = this.canvasRef.offsetHeight;
+        this._canvasCenter = new Point(this.canvasRef.width / 2,this.canvasRef.height / 2)
     }
 
     public zoom(value: number): void {
@@ -44,7 +44,6 @@ export default class Table {
     }
 
     public panBy(p: Point): void {
-        const offset:Point = this._tableModel.offset;
         this._tableModel.offset.add(p);
     }
 
@@ -58,7 +57,7 @@ export default class Table {
 
     public render(): void {
         // Clear!
-        this._canvas.clear(0,0,this._canvasRef.width,this._canvasRef.height);
+        this._canvas.clear(0,0,this.canvasRef.width,this.canvasRef.height);
 
         //draw background
         if (!this._tableModel.bgImage) {

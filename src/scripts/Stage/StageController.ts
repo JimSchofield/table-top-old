@@ -134,7 +134,6 @@ export default class StageController {
     }
 
     private _onMouseMovePan(event: MouseEvent): void {
-        console.log('onMouseMovePan');
         if (event.buttons == 0) {
             /*
             * Occasionally this event is not triggered and the pan listener is not
@@ -142,7 +141,6 @@ export default class StageController {
             * attempt.  Seems to be browser bug
             */
             window.removeEventListener( "mousemove", this._onMouseMovePanHandler );
-            console.log('exit panning');
             document.body.style.cursor = "default";
         } else {
             document.body.style.cursor = "move";          

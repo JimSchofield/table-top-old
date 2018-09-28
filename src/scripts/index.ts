@@ -1,13 +1,14 @@
 import "../styles/index.scss";
 
 import EventController from "./Events/EventController";
-import TableController from "./Table/TableController";
+import StageController from "./Stage/StageController";
+import socket from './Socket/socket';
 import render from "./Render/render";
 
 class App {
     private _container: HTMLDivElement = null;
     private _eventController: EventController = null;
-    private _tableController: TableController = null;
+    private _stageController: StageController = null;
 
     constructor() {
         // engage!
@@ -30,13 +31,14 @@ class App {
 
     private createChildren(): this {
         this._eventController = new EventController();
-        this._tableController = new TableController(this._container);
+        this._stageController = new StageController(this._container);
 
         return this;
     }
 
     private init(): this {
         render.init();
+        socket.init();
 
         return this;
     }

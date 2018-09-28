@@ -1,6 +1,6 @@
 import Point from '../Util/Point'
 
-export default class TableModel {
+export default class StageModel {
     // settings
     private _offset: Point = Point.fromArray([0,0]);
     private _zoomLevel: number = 1;
@@ -11,30 +11,30 @@ export default class TableModel {
 
     // tokens
 
-    public set offset(val: Point) {
-        this._offset = val;
-    }
-
     public get offset(): Point {
         return this._offset;
     }
 
-    public set bgImage(img: HTMLImageElement) {
-        this._bgImage = img;
-        this._bgImageDimensions = Point.fromArray([img.width, img.height]);
+    public set offset(val: Point) {
+        this._offset = val;
     }
 
     public get bgImage(): HTMLImageElement {
         return this._bgImage;
     }
-
-    public set zoom(val: number) {
-        this._zoomLevel = val;
+    public set bgImage(img: HTMLImageElement) {
+        this._bgImage = img;
+        this._bgImageDimensions = Point.fromArray([img.width, img.height]);
     }
+
 
     public get zoom(): number {
         return this._zoomLevel;
     }
+    public set zoom(val: number) {
+        this._zoomLevel = val;
+    }
+
 
     public get bgImageDimensions(): Point {
         return this._bgImageDimensions;

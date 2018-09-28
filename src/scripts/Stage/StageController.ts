@@ -1,13 +1,13 @@
 import Point from "../Util/Point";
-import render from "../Render/render";
-import TableModel from "./TableModel";
-import Table from "./Table";
+import Render from "../Render/render";
+import StageModel from "./StageModel";
+import Stage from "./Stage";
 
-export default class TableController {
+export default class StageController {
     private _appContainer: HTMLDivElement = null;
-    private _tableContainer: HTMLDivElement = null;
-    private _tableModel: TableModel = null;
-    private _table: Table = null;
+    private _stageContainer: HTMLDivElement = null;
+    private _stageModel: StageModel = null;
+    private _stage: Stage = null;
     private _lastMousePos: Point = null;
     private _currentMouse: Point = null;
     private _isDragging: boolean = false;
@@ -21,40 +21,40 @@ export default class TableController {
     private _onSpaceBarDownClickHandler: (event: MouseEvent) => void = this._onSpaceBarDownClick.bind(this);
 
     constructor(appContainer: HTMLDivElement) {
-        // set container and create table div
+        // set container and create stage div
         this._appContainer = appContainer;
-        this._constructTable();
+        this._constructStage();
 
-        // populate table parts
-        this._tableModel = new TableModel();
-        this._table = new Table(this._tableModel, this._tableContainer);
+        // populate stage parts
+        this._stageModel = new StageModel();
+        this._stage = new Stage(this._stageModel, this._stageContainer);
 
         this._attachHandlers();
 
         // TODO: controlled by App or Server?
         this.setBackground("src/assets/images/nightstone.jpeg");
 
-        // Add table to render queue
-        render.add(this._table);
+        // Add stage to render queue
+        Render.add(this._stage);
     }
 
-    private _constructTable(): void {
-        // Create table container
-        this._tableContainer = document.createElement("div");
-        this._tableContainer.id = "table";
-        this._tableContainer.style.width = `100%`;
-        this._tableContainer.style.height = `100%`;
-        this._appContainer.appendChild(this._tableContainer);
+    private _constructStage(): void {
+        // Create stage container
+        this._stageContainer = document.createElement("div");
+        this._stageContainer.id = "stage";
+        this._stageContainer.style.width = `100%`;
+        this._stageContainer.style.height = `100%`;
+        this._appContainer.appendChild(this._stageContainer);
     }
 
     public setBackground(url: string): void {
         let image: HTMLImageElement = new Image();
         image.src = url;
         image.onload = () => {
-            this._tableModel.bgImage = image;
+            this._stageModel.bgImage = image;
 
-            // center table by default
-            this._table.centerTable();
+            // center stage by default
+            this._stage.centerStage();
         };
     }
 
@@ -63,38 +63,38 @@ export default class TableController {
         window.addEventListener("keyup", this._onkeyUpHandler);
         window.addEventListener("resize", this._onResizeHandler);
         window.addEventListener("wheel", this._onWheelHandler);
-        this._table.canvasRef.addEventListener( "mousedown", this._onWheelDownStartPanningHandler );
+        this._stage.canvasRef.addEventListener( "mousedown", this._onWheelDownStartPanningHandler );
     }
 
     private _onKeyDown(event: KeyboardEvent): void {
         switch (event.key) {
             case "c":
-                this._table.centerTable();
+                this._stage.centerStage();
                 break;
             case "=":
-                this._table.zoom(1.25);
+                this._stage.zoom(1.25);
                 break;
             case "-":
-                this._table.zoom(0.8);
+                this._stage.zoom(0.8);
                 break;
             case "0":
-                this._table.resetZoom();
+                this._stage.resetZoom();
                 break;
             case "Up":
             case "ArrowUp":
-                this._table.panBy(new Point(0, 50));
+                this._stage.panBy(new Point(0, 50));
                 break;
             case "Down":
             case "ArrowDown":
-                this._table.panBy(new Point(0, -50));
+                this._stage.panBy(new Point(0, -50));
                 break;
             case "Left":
             case "ArrowLeft":
-                this._table.panBy(new Point(50, 0));
+                this._stage.panBy(new Point(50, 0));
                 break;
             case "Right":
             case "ArrowRight":
-                this._table.panBy(new Point(-50, 0));
+                this._stage.panBy(new Point(-50, 0));
                 break;
             case " ":
                 if (this._isDragging) {
@@ -119,9 +119,9 @@ export default class TableController {
 
     private _onWheel(event: WheelEvent): void {
         if (event.wheelDeltaY > 10) {
-            this._table.zoom(0.9);
+            this._stage.zoom(0.9);
         } else if (event.wheelDeltaY < -10) {
-            this._table.zoom(1 / 0.9);
+            this._stage.zoom(1 / 0.9);
         }
     }
 
@@ -148,7 +148,7 @@ export default class TableController {
             document.body.style.cursor = "move";          
             const client = Point.fromMouseEvent(event);
             const delta = Point.subtract(client, this._lastMousePos);
-            this._tableModel.offset.add(delta);
+            this._stageModel.offset.add(delta);
             this._lastMousePos = client;
         }
     }
@@ -171,6 +171,6 @@ export default class TableController {
     }
 
     private _onResize(): void {
-        this._table.resizeCanvasToParent();
+        this._stage.resizeCanvasToParent();
     }
 }

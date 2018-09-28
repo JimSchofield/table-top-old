@@ -7,12 +7,13 @@
     "build": "webpack",
     "watch": "webpack --watch",
     "start": "webpack-dev-server --open",
-    "serve": "webpack-dev-server",
+    "serve": "webpack-dev-server --host 0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jim Schofield",
   "license": "ISC",
   "devDependencies": {
+    "@types/socket.io-client": "^1.4.32",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^1.0.0",
@@ -30,6 +31,8 @@
     "webpack-dev-server": "^3.1.8"
   },
   "dependencies": {
-    "es6-promise": "^4.2.5"
+    "@types/socket.io": "^1.4.38",
+    "es6-promise": "^4.2.5",
+    "socket.io-client": "^2.1.1"
   }
 }
